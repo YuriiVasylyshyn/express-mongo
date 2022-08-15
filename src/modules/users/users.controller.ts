@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { GetUserDto } from './dtos/get-user.dto';
-import userModel from './user.model';
+import userModel, { type User } from './models/user.model';
 
 import type { CreateUserDto } from './dtos/create-user.dto';
 import type { Controller } from '../../interfaces';
@@ -19,7 +19,7 @@ export default class UsersController implements Controller  {
   }
 
   public async getAllUsers(_request: Request, response: Response): Promise<void> {
-    const res: CreateUserDto[] = await userModel.find();
+    const res: User[] = await userModel.find();
     response.send(res);
   }
 

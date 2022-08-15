@@ -3,7 +3,7 @@ import UsersController from './modules/users/users.controller';
 
 const app = new App(
   [
-    new UsersController(),
+    new UsersController('users'),
   ],
 );
 

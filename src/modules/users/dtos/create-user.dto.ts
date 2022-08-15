@@ -1,4 +1,9 @@
-export interface CreateUserDto {
-  firstName: string;
-  lastName: string;
+export class CreateUserDto {
+
+  public id!: string;
+
+  public firstName!: string;
+
+  public lastName!: string;
+
 }

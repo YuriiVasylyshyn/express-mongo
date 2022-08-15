@@ -1,45 +1,42 @@
 import { Router, type Request, type Response } from 'express';
 import { GetUserDto } from './dtos/get-user.dto';
+import userModel from './user.model';
 
 import type { CreateUserDto } from './dtos/create-user.dto';
+import type { Controller } from '../../interfaces';
 
-export default class UsersController {
+export default class UsersController implements Controller  {
 
-  public path = '/users';
   public router = Router();
 
-  private users: GetUserDto[] = [
-    {
-      id: 'id1',
-      firstName: 'John',
-      lastName: 'Smith',
-    },
-  ];
-
-  constructor() {
-    this.intializeRoutes();
+  constructor(public path: string) {
+    this._intializeRoutes();
   }
 
-  public intializeRoutes(): void {
-    this.router.get(this.path, this.getAllUsers);
-    this.router.post(this.path, this.addUser);
+  private _intializeRoutes(): void {
+    this.router.get('/', this.getAllUsers);
+    this.router.post('/post', this.addUser);
   }
 
-  public getAllUsers(_request: Request, response: Response): void {
-    response.send(this.users);
+  public async getAllUsers(_request: Request, response: Response): Promise<void> {
+    const res: CreateUserDto[] = await userModel.find();
+    response.send(res);
   }
 
-  public addUser(request: Request, response: Response): void {
+  public async addUser(request: Request, response: Response): Promise<void> {
     const res = request.body as CreateUserDto;
 
-    const user = new GetUserDto();
+    const user = await new userModel({
+      ...res,
+    }).save();
 
-    user.id = `id${this.users.length + 1}`;
-    user.firstName = res.firstName;
-    user.lastName = res.lastName;
+    const userData = new GetUserDto();
 
-    this.users.push(user);
-    response.send(user);
+    userData.id = user.id as string;
+    userData.firstName = user.firstName;
+    userData.lastName = user.lastName;
+
+    response.send(userData);
   }
 
 }

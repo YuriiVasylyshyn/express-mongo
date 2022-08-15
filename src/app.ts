@@ -1,24 +1,30 @@
-import express, { json } from 'express';
+import express, { type Application, json } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+
 import type { Controller } from './interfaces';
 
 dotenv.config();
 
-export class App {
+export default class App {
 
-  public app: express.Application;
+  public app: Application;
   public port: string | number;
 
   constructor(controllers: Controller[]) {
-    dotenv.config();
-
     this.app = express();
     this.port = process.env.PORT ?? 3000;
 
+    this._connectToTheDatabase();
     this._initializeMiddlewares();
     this._initializeControllers(controllers);
-    this._connectToDB();
+  }
+
+  public listen(): void {
+    this.app.listen(this.port, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Server is running at http://localhost:${this.port}`);
+    });
   }
 
   private _initializeMiddlewares(): void {
@@ -27,11 +33,11 @@ export class App {
 
   private _initializeControllers(controllers: Controller[]): void {
     controllers.forEach((controller) => {
-      this.app.use('/', controller.router);
+      this.app.use(`/api/v1/${controller.path}`, controller.router);
     });
   }
 
-  private async _connectToDB(): Promise<void> {
+  private async _connectToTheDatabase(): Promise<void> {
     const {
       DB_USER,
       DB_PASSWORD,
@@ -39,13 +45,6 @@ export class App {
     } = process.env;
 
     await mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASSWORD}${DB_URL}`);
-  }
-
-  public listen(): void {
-    this.app.listen(this.port, () => {
-      // eslint-disable-next-line no-console
-      console.log(`Server is running at http://localhost:${this.port}`);
-    });
   }
 
 }

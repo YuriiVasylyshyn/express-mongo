@@ -1,8 +1,9 @@
 import { Router, type Request, type Response } from 'express';
 import { GetUserDto } from './dtos/get-user.dto';
 import userModel, { type User } from './models/user.model';
+import { CreateUserDto } from './dtos/create-user.dto';
+import validationMiddleware from '../../middlewares/validation.middleware';
 
-import type { CreateUserDto } from './dtos/create-user.dto';
 import type { Controller } from '../../interfaces';
 
 export default class UsersController implements Controller  {
@@ -15,7 +16,7 @@ export default class UsersController implements Controller  {
 
   private _intializeRoutes(): void {
     this.router.get('/', this.getAllUsers);
-    this.router.post('/post', this.addUser);
+    this.router.post('/post', validationMiddleware(CreateUserDto), this.addUser);
   }
 
   public async getAllUsers(_request: Request, response: Response): Promise<void> {

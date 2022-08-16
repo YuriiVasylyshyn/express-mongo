@@ -1,6 +1,7 @@
 import express, { type Application, json } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import errorMiddleware from './middlewares/exception.middleware';
 
 import type { Controller } from './interfaces';
 
@@ -17,6 +18,7 @@ export default class App {
 
     this._connectToTheDatabase();
     this._initializeMiddlewares();
+    this.initializeErrorHandling();
     this._initializeControllers(controllers);
   }
 
@@ -29,6 +31,10 @@ export default class App {
 
   private _initializeMiddlewares(): void {
     this.app.use(json());
+  }
+
+  private initializeErrorHandling(): void {
+    this.app.use(errorMiddleware);
   }
 
   private _initializeControllers(controllers: Controller[]): void {

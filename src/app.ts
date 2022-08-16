@@ -1,7 +1,9 @@
 import express, { type Application, json } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import passport from './middlewares/passport.middleware';
 import errorMiddleware from './middlewares/exception.middleware';
+import sessionMiddleware from './middlewares/session.middleware';
 
 import type { Controller } from './interfaces';
 
@@ -31,6 +33,9 @@ export default class App {
 
   private _initializeMiddlewares(): void {
     this.app.use(json());
+    this.app.use(sessionMiddleware);
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
   }
 
   private _initializeErrorHandling(): void {

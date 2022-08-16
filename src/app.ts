@@ -18,7 +18,7 @@ export default class App {
 
     this._connectToTheDatabase();
     this._initializeMiddlewares();
-    this.initializeErrorHandling();
+    this._initializeErrorHandling();
     this._initializeControllers(controllers);
   }
 
@@ -33,7 +33,7 @@ export default class App {
     this.app.use(json());
   }
 
-  private initializeErrorHandling(): void {
+  private _initializeErrorHandling(): void {
     this.app.use(errorMiddleware);
   }
 
